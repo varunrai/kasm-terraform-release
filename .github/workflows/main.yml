@@ -1,0 +1,33 @@
+name: Publish Release - Kasm
+on:
+  workflow_dispatch:
+
+  push:
+    branches:
+    - main
+
+jobs:
+  Release:
+    env:
+      commitmsg: ${{ github.event.head_commit.message }}
+      
+    name: prepare release package
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        ref: main
+    
+    - name: get commit message
+      run: |
+            echo Commit MSG = ${{ env.commitmsg }}
+            
+    - uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "${{ env.commitmsg }}"
+          prerelease: false
+          title: "Release Build - ${{ env.commitmsg }}"
+          files: |
+            **/*.tar.gz
